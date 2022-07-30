@@ -53,6 +53,7 @@ pub mod pallet{
 
     #[pallet::call]
     impl<T:Config> Pallet<T>{
+        ///创建存证
         #[pallet::weight(0)]
         pub fn create_claim(
             origin: OriginFor<T>,
@@ -68,7 +69,8 @@ pub mod pallet{
             Self::deposit_event(Event::ClaimCreated(sender,claim));
             Ok(().into())
         }
-       
+     
+        ///撤销存证
     #[pallet::weight(0)]
     pub fn revoke_claim(
     origin: OriginFor<T>,
