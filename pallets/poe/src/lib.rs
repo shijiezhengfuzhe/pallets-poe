@@ -45,6 +45,7 @@ pub mod pallet{
         ProofAlreadyExist,
         ClaimNotExist,
         NotClaimOwner,
+        NoSuchProof,
     }
 
     #[pallet::hooks]
@@ -81,5 +82,25 @@ pub mod pallet{
             Self::deposit_event(Event::ClaimRevoked(sender,claim));
             Ok(().into())
     }
+        ///转移存证 
+        #[pallet::weight(0)]
+    pub fn revoke_claim(
+    origin: OriginFor<T>,
+            claim:Vec<u8>
+        ) ->DispatchResultWithPostInfo{
+            let sender=ensure_signed(origin)?;
+            ensure!(Proofs::<T>::contains_key(&proof),Error::<T>::NoSuchProof);
+            let(owner,_)=Proofs::<T>::get(&proof).unwrap();
+            ensure!(owner==sender,Error::<T>::NoSuchProof);
+            let current_block=<frame_system::Pallet<T>::block_number();
+            
+            Proofs::<T>::mutate(&proof,|value|{
+                value.as_mut().unwrap().0=receiver.clone();
+                value.as_mut().unwrap().1=current-block;
+            });
+            Self::deposit_event(Event::ClaimTransfer(sender,receiver,proof)};
+            Ok(().into())
+            
+    } 
   }     
 }
